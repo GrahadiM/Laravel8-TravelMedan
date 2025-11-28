@@ -29,7 +29,7 @@ class PostController extends Controller
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
         $data['image'] = $request->file('image')->store(
-            'assets/post', 'public'
+            'assets/posts', 'public'
         );
 
         Post::create($data);
@@ -51,7 +51,7 @@ class PostController extends Controller
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
         $data['image'] = $request->image ? $request->file('image')->store(
-            'assets/post', 'public'
+            'assets/posts', 'public'
         ) : $post->image;
 
         $post->update($data);
@@ -59,7 +59,7 @@ class PostController extends Controller
         return redirect()->route('admin.posts.index')->with('message', 'Updated Successfully !');
     }
 
-    public function destroy(Post $post): View
+    public function destroy(Post $post): RedirectResponse
     {
         if($post->image){
             File::delete('storage/' . $post->image);

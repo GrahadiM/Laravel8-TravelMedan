@@ -15,6 +15,7 @@
 
     <!-- Custom fonts for this template-->
     @include('partials.admin.style')
+    @stack('style-alt')
 
 </head>
 

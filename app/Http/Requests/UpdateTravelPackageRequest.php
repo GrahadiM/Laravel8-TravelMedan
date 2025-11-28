@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTravelPackageRequest extends FormRequest
+class UpdateTravelPackageRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class StoreTravelPackageRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255|unique:travel_packages,name',
+            'name' => 'required|string|max:255|unique:travel_packages,name,' . $this->route('travel_package')->id,
             'duration' => 'required|string|max:100',
             'location' => 'required|string|max:255',
             'description' => 'required|string',

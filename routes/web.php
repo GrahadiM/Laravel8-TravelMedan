@@ -38,8 +38,9 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
         Route::resource('cars', \App\Http\Controllers\Admin\CarController::class);
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
-        Route::resource('travel-packages', \App\Http\Controllers\Admin\TravelPackageController::class);
+        Route::resource('travel-packages', \App\Http\Controllers\Admin\TravelPackageController::class)->except(['show']);
+        Route::get('travel-packages/datatables', [\App\Http\Controllers\Admin\TravelPackageController::class, 'datatables'])->name('travel-packages.datatables');
         Route::resource('travel-packages.galleries', \App\Http\Controllers\Admin\GalleryController::class);
     });
-    
+
 });

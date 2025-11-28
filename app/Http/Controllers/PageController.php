@@ -36,7 +36,7 @@ class PageController extends Controller
         \Midtrans\Config::$isSanitized = true;
         // Set 3DS transaction for credit card to true
         \Midtrans\Config::$is3ds = true;
-        
+
         $params = array(
             'transaction_details' => array(
                 'order_id' => rand(),
@@ -75,7 +75,7 @@ class PageController extends Controller
                 'akulaku'
             ),
         );
-        
+
         $snapToken = \Midtrans\Snap::getSnapToken($params);
         // dd($params);
 
@@ -113,8 +113,7 @@ class PageController extends Controller
         $message = $request->message;
 
         $url = 'https://api.whatsapp.com/send?phone=+6281360503971&text=Nama%20:%20'.$name.'%0AEmail%20:%20'.$email.'%0APesan%20:%20'.$message;
-        // dd($url);
-        
+
         return redirect($url);
     }
 
