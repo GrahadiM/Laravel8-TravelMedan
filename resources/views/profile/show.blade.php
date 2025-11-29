@@ -20,7 +20,7 @@
             <div class="col-md-8">
                 <div class="card shadow">
                     <div class="card-header bg-info">
-                        <h4 class="fw-bold mb-0"><i class="bx bx-user"></i> Profile</h4>
+                        <h5 class="fw-bold mb-0"><i class="bx bx-user"></i> Profile</h5>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -86,9 +86,16 @@
                             <a href="{{ route('profile.edit') }}" class="btn btn-info">
                                 <i class="bx bx-edit"></i> Edit Profile
                             </a>
-                            <a href="{{ route('profile.orders') }}" class="btn btn-outline-info">
+                            <a href="{{ route('profile.orders') }}" class="btn btn-warning">
                                 <i class="bx bx-history"></i> Riwayat Order
                             </a>
+                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-danger">
+                                <i class="bx bx-log-out"></i> Logout
+                            </a>
+
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -96,8 +103,8 @@
                 <!-- Recent Orders -->
                 @if($recentOrders->count() > 0)
                 <div class="card shadow mt-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class="bx bx-history"></i> Order Terbaru</h5>
+                    <div class="card-header bg-info">
+                        <h5 class="fw-bold mb-0"><i class="bx bx-history"></i> Order Terbaru</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -133,7 +140,7 @@
                             </table>
                         </div>
                         <div class="text-center mt-3">
-                            <a href="{{ route('profile.orders') }}" class="btn btn-outline-primary btn-sm">
+                            <a href="{{ route('profile.orders') }}" class="btn btn-primary btn-sm">
                                 Lihat Semua Order
                             </a>
                         </div>

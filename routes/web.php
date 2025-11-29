@@ -53,6 +53,12 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('travel-packages', \App\Http\Controllers\Admin\TravelPackageController::class)->except(['show']);
         Route::get('travel-packages/datatables', [\App\Http\Controllers\Admin\TravelPackageController::class, 'datatables'])->name('travel-packages.datatables');
         Route::resource('travel-packages.galleries', \App\Http\Controllers\Admin\GalleryController::class);
+        Route::get('transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('transactions/datatables', [\App\Http\Controllers\Admin\TransactionController::class, 'datatables'])->name('transactions.datatables');
+        Route::get('transactions/statistics', [\App\Http\Controllers\Admin\TransactionController::class, 'statistics'])->name('transactions.statistics');
+        Route::get('transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('transactions.show');
+        Route::put('transactions/{transaction}/update-status', [\App\Http\Controllers\Admin\TransactionController::class, 'updateStatus'])->name('transactions.update-status');
+        Route::delete('transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'destroy'])->name('transactions.destroy');
+        Route::post('transactions/export', [\App\Http\Controllers\Admin\TransactionController::class, 'export'])->name('transactions.export');
     });
-
 });

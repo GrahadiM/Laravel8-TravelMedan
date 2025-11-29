@@ -21,9 +21,41 @@
         <section class="container">
             <div class="row justify-content-center">
                 <div class="col-md-12">
+
+                    <!-- Info Panel -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="fw-bold mb-0"><i class="bx bx-info-circle"></i> Informasi Pembayaran</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Status Order:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><span class="badge bg-warning">Pending</span> - Menunggu pembayaran</li>
+                                        <li><span class="badge bg-success">Success</span> - Pembayaran berhasil</li>
+                                        <li><span class="badge bg-danger">Failed</span> - Pembayaran gagal</li>
+                                        <li><span class="badge bg-secondary">Expire</span> - Waktu pembayaran habis</li>
+                                        <li><span class="badge bg-dark">Cancel</span> - Order dibatalkan</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Metode Pembayaran:</h6>
+                                    <ul>
+                                        <li>Transfer Bank (BCA, BNI, BRI, Mandiri)</li>
+                                        <li>E-Wallet (GoPay, ShopeePay, OVO)</li>
+                                        <li>Kartu Kredit</li>
+                                        <li>Minimarket (Alfamart, Indomaret)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order List -->
                     <div class="card shadow">
-                        <div class="card-header bg-info text-white">
-                            <h4 class="fw-bold mb-0"><i class="bx bx-history"></i> Riwayat Order</h4>
+                        <div class="card-header bg-info">
+                            <h5 class="fw-bold mb-0"><i class="bx bx-history"></i> Riwayat Pembayaran</h5>
                         </div>
                         <div class="card-body">
                             @if (session('success'))
@@ -157,36 +189,6 @@
                                     </a>
                                 </div>
                             @endif
-                        </div>
-                    </div>
-
-                    <!-- Info Panel -->
-                    <div class="card shadow mt-4">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0"><i class="bx bx-info-circle"></i> Informasi Pembayaran</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Status Order:</h6>
-                                    <ul class="list-unstyled">
-                                        <li><span class="badge bg-warning">Pending</span> - Menunggu pembayaran</li>
-                                        <li><span class="badge bg-success">Success</span> - Pembayaran berhasil</li>
-                                        <li><span class="badge bg-danger">Failed</span> - Pembayaran gagal</li>
-                                        <li><span class="badge bg-secondary">Expire</span> - Waktu pembayaran habis</li>
-                                        <li><span class="badge bg-dark">Cancel</span> - Order dibatalkan</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Metode Pembayaran:</h6>
-                                    <ul>
-                                        <li>Transfer Bank (BCA, BNI, BRI, Mandiri)</li>
-                                        <li>E-Wallet (GoPay, ShopeePay, OVO)</li>
-                                        <li>Kartu Kredit</li>
-                                        <li>Minimarket (Alfamart, Indomaret)</li>
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
