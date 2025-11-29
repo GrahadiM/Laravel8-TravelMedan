@@ -3,17 +3,6 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -31,18 +20,29 @@ Route::get('kirim-wa', [App\Http\Controllers\PageController::class, 'getWhatsapp
 Route::post('kontak-kami', [App\Http\Controllers\PageController::class, 'getEmail'])->name('contact.email');
 
 Route::group(['middleware' => 'auth'], function() {
+    // Profile Routes
+    Route::get('profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
+    Route::get('profile/edit', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('profile/orders', [App\Http\Controllers\ProfileController::class, 'orders'])->name('profile.orders');
+    Route::delete('order/{order}/cancel', [App\Http\Controllers\ProfileController::class, 'cancelOrder'])->name('order.cancel');
+    Route::get('payment/check-status/{orderId}', [App\Http\Controllers\ProfileController::class, 'checkPaymentStatus'])->name('payment.check-status');
+
+    // Order routes
     Route::get('order/{travelPackage:slug}', [App\Http\Controllers\PageController::class, 'order'])->name('order');
 
-    // Payment routes
-    Route::post('payment/finish', [App\Http\Controllers\PageController::class, 'paymentFinish'])->name('payment.finish');
-    Route::post('payment/error', [App\Http\Controllers\PageController::class, 'paymentError'])->name('payment.error');
-    Route::post('payment/pending', [App\Http\Controllers\PageController::class, 'paymentPending'])->name('payment.pending');
+    // Payment callback routes - GET untuk Midtrans
+    Route::get('payment/finish', [App\Http\Controllers\PageController::class, 'paymentFinish'])->name('payment.finish');
+    Route::get('payment/error', [App\Http\Controllers\PageController::class, 'paymentError'])->name('payment.error');
+    Route::get('payment/pending', [App\Http\Controllers\PageController::class, 'paymentPending'])->name('payment.pending');
+
+    // Webhook notification
     Route::post('payment/notification', [App\Http\Controllers\PageController::class, 'paymentNotification'])->name('payment.notification');
 
     // Payment status pages
     Route::get('payment/success', [App\Http\Controllers\PageController::class, 'paymentSuccess'])->name('payment.success');
     Route::get('payment/failed', [App\Http\Controllers\PageController::class, 'paymentFailed'])->name('payment.failed');
-    Route::get('payment/pending', [App\Http\Controllers\PageController::class, 'paymentPendingPage'])->name('payment.pending-page');
+    Route::get('payment/pending-page', [App\Http\Controllers\PageController::class, 'paymentPendingPage'])->name('payment.pending-page');
 
     Route::group(['middleware' => 'isAdmin', 'prefix' => 'admin', 'as' => 'admin.'], function() {
         Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
