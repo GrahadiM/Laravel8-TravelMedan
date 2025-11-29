@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use App\Models\Post;
 use App\Models\Category;
+use Illuminate\View\View;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 use App\Models\TravelPackage;
 use App\Mail\StoreContactMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreEmailRequest;
 
 class PageController extends Controller
@@ -26,61 +28,61 @@ class PageController extends Controller
         return view('detail', compact('travelPackage'));
     }
 
-    public function order(TravelPackage $travelPackage, Request $request) : View
-    {
-        // Set your Merchant Server Key
-        \Midtrans\Config::$serverKey = 'SB-Mid-server-wbmWfkTrpDPtKkWkaEdEZHMm';
-        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        \Midtrans\Config::$isProduction = false;
-        // Set sanitization on (default)
-        \Midtrans\Config::$isSanitized = true;
-        // Set 3DS transaction for credit card to true
-        \Midtrans\Config::$is3ds = true;
+    // public function order(TravelPackage $travelPackage, Request $request) : View
+    // {
+    //     // Set your Merchant Server Key
+    //     \Midtrans\Config::$serverKey = 'SB-Mid-server-wbmWfkTrpDPtKkWkaEdEZHMm';
+    //     // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+    //     \Midtrans\Config::$isProduction = false;
+    //     // Set sanitization on (default)
+    //     \Midtrans\Config::$isSanitized = true;
+    //     // Set 3DS transaction for credit card to true
+    //     \Midtrans\Config::$is3ds = true;
 
-        $params = array(
-            'transaction_details' => array(
-                'order_id' => rand(),
-                'gross_amount' => $travelPackage->price,
-            ),
-            'customer_details' => array(
-                'first_name' => auth()->user()->name,
-                'last_name' => '',
-                'email' => auth()->user()->email,
-                'phone' => '',
-            ),
-            'callbacks' => array(
-                'finish' => 'http://127.0.0.1:8000/'
-            ),
-            'enabled_payments' => array(
-                'credit_card',
-                'gopay',
-                'shopeepay',
-                'permata_va',
-                'bca_va',
-                'bni_va',
-                'bri_va',
-                'echannel',
-                'other_va',
-                'danamon_online',
-                'mandiri_clickpay',
-                'cimb_clicks',
-                'bca_klikbca',
-                'bca_klikpay',
-                'bri_epay',
-                'xl_tunai',
-                'indosat_dompetku',
-                'kioson',
-                'Indomaret',
-                'alfamart',
-                'akulaku'
-            ),
-        );
+    //     $params = array(
+    //         'transaction_details' => array(
+    //             'order_id' => rand(),
+    //             'gross_amount' => $travelPackage->price,
+    //         ),
+    //         'customer_details' => array(
+    //             'first_name' => auth()->user()->name,
+    //             'last_name' => '',
+    //             'email' => auth()->user()->email,
+    //             'phone' => '',
+    //         ),
+    //         'callbacks' => array(
+    //             'finish' => 'http://127.0.0.1:8000/'
+    //         ),
+    //         'enabled_payments' => array(
+    //             'credit_card',
+    //             'gopay',
+    //             'shopeepay',
+    //             'permata_va',
+    //             'bca_va',
+    //             'bni_va',
+    //             'bri_va',
+    //             'echannel',
+    //             'other_va',
+    //             'danamon_online',
+    //             'mandiri_clickpay',
+    //             'cimb_clicks',
+    //             'bca_klikbca',
+    //             'bca_klikpay',
+    //             'bri_epay',
+    //             'xl_tunai',
+    //             'indosat_dompetku',
+    //             'kioson',
+    //             'Indomaret',
+    //             'alfamart',
+    //             'akulaku'
+    //         ),
+    //     );
 
-        $snapToken = \Midtrans\Snap::getSnapToken($params);
-        // dd($params);
+    //     $snapToken = \Midtrans\Snap::getSnapToken($params);
+    //     // dd($params);
 
-        return view('order', ['snap_token'=>$snapToken], compact('travelPackage'));
-    }
+    //     return view('order', ['snap_token'=>$snapToken], compact('travelPackage'));
+    // }
 
     public function package()
     {
@@ -127,5 +129,179 @@ class PageController extends Controller
 
         Mail::to('grahadim178@gmail.com')->send(new StoreContactMail($detail));
         return back()->with('message', 'Terimakasih atas feedbacknya! kami akan membacanya sesegera mungkin');
+    }
+
+    public function order(TravelPackage $travelPackage, Request $request)
+    {
+        // Generate unique order ID
+        $orderId = 'TRV-' . date('Ymd') . '-' . rand(1000, 9999);
+
+        // Set Midtrans configuration
+        \Midtrans\Config::$serverKey = config('services.midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('services.midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => $travelPackage->price,
+            ],
+            'customer_details' => [
+                'first_name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+                'phone' => auth()->user()->phone ?? '085767113554',
+            ],
+            'item_details' => [
+                [
+                    'id' => $travelPackage->id,
+                    'price' => $travelPackage->price,
+                    'quantity' => 1,
+                    'name' => $travelPackage->name,
+                    'category' => $travelPackage->category->title ?? 'Travel Package',
+                ]
+            ],
+            'callbacks' => [
+                'finish' => route('payment.finish'),
+                'error' => route('payment.error'),
+                'pending' => route('payment.pending'),
+            ],
+            'enabled_payments' => [
+                'credit_card',
+                'gopay',
+                'shopeepay',
+                'permata_va',
+                'bca_va',
+                'bni_va',
+                'bri_va',
+                'echannel',
+                'other_va',
+                'danamon_online',
+                'mandiri_clickpay',
+                'cimb_clicks',
+                'bca_klikbca',
+                'bca_klikpay',
+                'bri_epay',
+                'xl_tunai',
+                'indosat_dompetku',
+                'kioson',
+                'indomaret',
+                'alfamart',
+                'akulaku'
+            ],
+        ];
+
+
+        try {
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
+            // dd($params, $snapToken);
+
+            // Save transaction to database
+            $transaction = Transaction::create([
+                'user_id' => auth()->id(),
+                'travel_package_id' => $travelPackage->id,
+                'order_id' => $orderId,
+                'transaction_id' => $orderId, // Same as order_id for now
+                'amount' => $travelPackage->price,
+                'status' => 'pending',
+                'snap_token' => $snapToken,
+            ]);
+
+            return view('order', [
+                'snap_token' => $snapToken,
+                'travelPackage' => $travelPackage,
+                'transaction' => $transaction
+            ]);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Payment gateway error: ' . $e->getMessage());
+        }
+    }
+
+    public function paymentFinish(Request $request): RedirectResponse
+    {
+        $orderId = $request->order_id;
+        $transaction = Transaction::where('order_id', $orderId)->first();
+
+        if ($transaction) {
+            // Update transaction status based on Midtrans response
+            $status = $this->checkTransactionStatus($orderId);
+            $transaction->update(['status' => $status]);
+
+            if ($status === 'success') {
+                return redirect()->route('payment.success')->with('success', 'Pembayaran berhasil!');
+            }
+        }
+
+        return redirect()->route('payment.pending')->with('info', 'Menunggu konfirmasi pembayaran...');
+    }
+
+    public function paymentError(Request $request): RedirectResponse
+    {
+        $orderId = $request->order_id;
+        $transaction = Transaction::where('order_id', $orderId)->first();
+
+        if ($transaction) {
+            $transaction->update(['status' => 'failed']);
+        }
+
+        return redirect()->route('payment.failed')->with('error', 'Pembayaran gagal! Silakan coba lagi.');
+    }
+
+    public function paymentPending(Request $request): RedirectResponse
+    {
+        $orderId = $request->order_id;
+        $transaction = Transaction::where('order_id', $orderId)->first();
+
+        if ($transaction) {
+            $transaction->update(['status' => 'pending']);
+        }
+
+        return redirect()->route('payment.pending-page')->with('info', 'Menunggu pembayaran...');
+    }
+
+    public function paymentSuccess(): View
+    {
+        return view('payment.success');
+    }
+
+    public function paymentFailed(): View
+    {
+        return view('payment.failed');
+    }
+
+    public function paymentPendingPage(): View
+    {
+        return view('payment.pending');
+    }
+
+    private function checkTransactionStatus($orderId)
+    {
+        try {
+            $status = \Midtrans\Transaction::status($orderId);
+            return $status->transaction_status;
+        } catch (\Exception $e) {
+            return 'pending';
+        }
+    }
+
+    // Webhook for Midtrans notification
+    public function paymentNotification(Request $request)
+    {
+        $notification = $request->all();
+
+        $transaction = Transaction::where('order_id', $notification['order_id'])->first();
+
+        if ($transaction) {
+            $transaction->update([
+                'status' => $notification['transaction_status'],
+                'payment_type' => $notification['payment_type'],
+                'payment_data' => $notification
+            ]);
+
+            // You can add additional logic here (send email, etc.)
+        }
+
+        return response()->json(['status' => 'success']);
     }
 }

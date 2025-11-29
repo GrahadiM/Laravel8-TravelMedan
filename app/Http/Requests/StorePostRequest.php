@@ -6,28 +6,32 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'title' => 'required',
-            'excerpt' => 'required',
-            'image' => 'required|image',
-            'content' => 'required'
+            'title' => 'required|string|max:255|unique:posts,title',
+            'excerpt' => 'required|string|max:500',
+            'content' => 'required|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Judul wajib diisi.',
+            'title.unique' => 'Judul sudah digunakan.',
+            'excerpt.required' => 'Excerpt wajib diisi.',
+            'content.required' => 'Konten wajib diisi.',
+            'image.required' => 'Gambar wajib diupload.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Gambar harus berformat: jpeg, png, jpg, gif.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
         ];
     }
 }

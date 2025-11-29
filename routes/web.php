@@ -33,9 +33,21 @@ Route::post('kontak-kami', [App\Http\Controllers\PageController::class, 'getEmai
 Route::group(['middleware' => 'auth'], function() {
     Route::get('order/{travelPackage:slug}', [App\Http\Controllers\PageController::class, 'order'])->name('order');
 
+    // Payment routes
+    Route::post('payment/finish', [App\Http\Controllers\PageController::class, 'paymentFinish'])->name('payment.finish');
+    Route::post('payment/error', [App\Http\Controllers\PageController::class, 'paymentError'])->name('payment.error');
+    Route::post('payment/pending', [App\Http\Controllers\PageController::class, 'paymentPending'])->name('payment.pending');
+    Route::post('payment/notification', [App\Http\Controllers\PageController::class, 'paymentNotification'])->name('payment.notification');
+
+    // Payment status pages
+    Route::get('payment/success', [App\Http\Controllers\PageController::class, 'paymentSuccess'])->name('payment.success');
+    Route::get('payment/failed', [App\Http\Controllers\PageController::class, 'paymentFailed'])->name('payment.failed');
+    Route::get('payment/pending', [App\Http\Controllers\PageController::class, 'paymentPendingPage'])->name('payment.pending-page');
+
     Route::group(['middleware' => 'isAdmin', 'prefix' => 'admin', 'as' => 'admin.'], function() {
         Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-        Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
+        Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
+        Route::get('posts/datatables', [App\Http\Controllers\Admin\PostController::class, 'datatables'])->name('posts.datatables');
         Route::resource('cars', \App\Http\Controllers\Admin\CarController::class);
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
         Route::resource('travel-packages', \App\Http\Controllers\Admin\TravelPackageController::class)->except(['show']);

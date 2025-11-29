@@ -7,16 +7,65 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
 use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Yajra\DataTables\Facades\DataTables;
 
 class PostController extends Controller
 {
     public function index(): View
     {
-        $posts = Post::get();
+        return view('admin.posts.index');
+    }
 
-        return view('admin.posts.index', compact('posts'));
+    /**
+     * Get data for DataTables
+     */
+    public function datatables(): JsonResponse
+    {
+        $posts = Post::select('posts.*')->latest();
+
+        return DataTables::of($posts)
+            ->addIndexColumn()
+            ->addColumn('action', function ($post) {
+                return '
+                    <div class="btn-group" role="group">
+                        <a href="'.route('admin.posts.edit', $post).'"
+                           class="btn btn-info btn-sm"
+                           title="Edit">
+                            <i class="fa fa-pencil-alt"></i>
+                        </a>
+                        <form class="d-inline"
+                              action="'.route('admin.posts.destroy', $post).'"
+                              method="POST">
+                            '.csrf_field().'
+                            '.method_field('DELETE').'
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    title="Delete"
+                                    onclick="return confirm(\'Apakah Anda yakin ingin menghapus post ini?\')">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                ';
+            })
+            ->editColumn('image', function ($post) {
+                if ($post->image) {
+                    return asset('storage/' . $post->image);
+                }
+                return null;
+            })
+            ->editColumn('created_at', function ($post) {
+                return $post->created_at->format('Y-m-d H:i:s');
+            })
+            ->editColumn('updated_at', function ($post) {
+                return $post->updated_at->format('Y-m-d H:i:s');
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 
     public function create(): View
@@ -26,15 +75,28 @@ class PostController extends Controller
 
     public function store(StorePostRequest $request): RedirectResponse
     {
-        $data = $request->all();
-        $data['slug'] = Str::slug($request->title);
-        $data['image'] = $request->file('image')->store(
-            'assets/posts', 'public'
-        );
+        try {
+            $data = $request->all();
+            $data['slug'] = Str::slug($request->title);
 
-        Post::create($data);
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')->store(
+                    'assets/posts', 'public'
+                );
+            }
 
-        return redirect()->route('admin.posts.index')->with('message', 'Added Successfully !');
+            Post::create($data);
+
+            return redirect()
+                ->route('admin.posts.index')
+                ->with('message', 'Post berhasil ditambahkan!');
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function edit(Post $post): View
@@ -42,31 +104,56 @@ class PostController extends Controller
         return view('admin.posts.edit', compact('post'));
     }
 
-    public function update(StorePostRequest $request, Post $post): RedirectResponse
+    public function update(UpdatePostRequest $request, Post $post): RedirectResponse
     {
-        if($request->image){
-            File::delete('storage/' . $post->image);
+        try {
+            $data = $request->all();
+            $data['slug'] = Str::slug($request->title);
+
+            if ($request->hasFile('image')) {
+                // Delete old image
+                if ($post->image) {
+                    File::delete('storage/' . $post->image);
+                }
+
+                $data['image'] = $request->file('image')->store(
+                    'assets/posts', 'public'
+                );
+            } else {
+                $data['image'] = $post->image;
+            }
+
+            $post->update($data);
+
+            return redirect()
+                ->route('admin.posts.index')
+                ->with('message', 'Post berhasil diperbarui!');
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        $data = $request->all();
-        $data['slug'] = Str::slug($request->title);
-        $data['image'] = $request->image ? $request->file('image')->store(
-            'assets/posts', 'public'
-        ) : $post->image;
-
-        $post->update($data);
-
-        return redirect()->route('admin.posts.index')->with('message', 'Updated Successfully !');
     }
 
     public function destroy(Post $post): RedirectResponse
     {
-        if($post->image){
-            File::delete('storage/' . $post->image);
+        try {
+            if ($post->image) {
+                File::delete('storage/' . $post->image);
+            }
+
+            $post->delete();
+
+            return redirect()
+                ->route('admin.posts.index')
+                ->with('message', 'Post berhasil dihapus!');
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('admin.posts.index')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        $post->delete();
-
-        return redirect()->route('admin.posts.index')->with('message', 'Deleted  Successfully !');
     }
 }
