@@ -14,7 +14,9 @@ class CategoryController extends Controller
     public function index() : View
     {
         $categories = Category::get();
-        return view('admin.categories.index', compact('categories'));
+        return view('admin.categories.index', [
+            'categories' => $categories
+        ]);
     }
 
     public function create() : View
@@ -31,7 +33,9 @@ class CategoryController extends Controller
 
     public function edit(Category $category) : View
     {
-        return view('admin.categories.edit', compact('category'));
+        return view('admin.categories.edit', [
+            'category' => $category
+        ]);
     }
 
     public function update(StoreCategoryRequest $request,Category $category) : RedirectResponse

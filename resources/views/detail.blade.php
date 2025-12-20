@@ -25,11 +25,13 @@
             <div class="swiper mySwiper detail-container">
                 <div class="swiper-wrapper">
 
-                    @foreach ($travelPackage->galleries as $gallery)
-                        <div class="detail-card swiper-slide">
-                            <img src="{{ Storage::url($gallery->path) }}" alt="" class="detail-img" />
-                        </div>
-                    @endforeach
+                    @if (!empty($travelPackage->galleries))
+                        @foreach ($travelPackage->galleries as $gallery)
+                            <div class="detail-card swiper-slide">
+                                <img src="{{ Storage::url($gallery->path) }}" alt="" class="detail-img" />
+                            </div>
+                        @endforeach
+                    @endif
 
                 </div>
             </div>

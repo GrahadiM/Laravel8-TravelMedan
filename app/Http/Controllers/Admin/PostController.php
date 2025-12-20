@@ -101,7 +101,9 @@ class PostController extends Controller
 
     public function edit(Post $post): View
     {
-        return view('admin.posts.edit', compact('post'));
+        return view('admin.posts.edit', [
+            'post' => $post
+        ]);
     }
 
     public function update(UpdatePostRequest $request, Post $post): RedirectResponse

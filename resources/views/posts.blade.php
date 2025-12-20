@@ -28,7 +28,9 @@
                         <a href="{{ route('posts.show', $post) }}">
                             <div class="card-post">
                                 <div class="card-post-img">
-                                    <img src="{{ Storage::url($post->image) }}" class="img-fluid w-100" alt="{{ $post->title }}" />
+                                    @if (!empty($post->image))
+                                        <img src="{{ Storage::url($post->image) }}" class="img-fluid w-100" alt="{{ $post->title }}" />
+                                    @endif
                                     {{-- <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8dHJhdmVsJTIwYmFsaXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60" alt="{{ $post->title }}"> --}}
                                 </div>
                                 <div class="card-post-data">

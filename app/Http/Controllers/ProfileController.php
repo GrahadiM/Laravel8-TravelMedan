@@ -20,13 +20,18 @@ class ProfileController extends Controller
             ->take(5)
             ->get();
 
-        return view('profile.show', compact('user', 'recentOrders'));
+        return view('profile.show', [
+            'user' => $user,
+            'recentOrders' => $recentOrders
+        ]);
     }
 
     public function edit(): View
     {
         $user = Auth::user();
-        return view('profile.edit', compact('user'));
+        return view('profile.edit', [
+            'user' => $user
+        ]);
     }
 
     public function update(Request $request): RedirectResponse
@@ -58,7 +63,9 @@ class ProfileController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('profile.orders', compact('user', 'orders'));
+        return view('profile.orders', [
+            'orders' => $orders
+        ]);
     }
 
     public function cancelOrder(Transaction $order): RedirectResponse

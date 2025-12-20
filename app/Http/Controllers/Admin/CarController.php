@@ -15,7 +15,9 @@ class CarController extends Controller
     {
         $cars = Car::get();
 
-        return view('admin.cars.index', compact('cars'));
+        return view('admin.cars.index', [
+            'cars' => $cars
+        ]);
     }
 
     public function create() : View
@@ -37,7 +39,9 @@ class CarController extends Controller
 
     public function edit(Car $car) : View
     {
-        return view('admin.cars.edit', compact('car'));
+        return view('admin.cars.edit', [
+            'car' => $car
+        ]);
     }
 
     public function update(StoreCarRequest $request, Car $car)
@@ -45,7 +49,7 @@ class CarController extends Controller
         if($request->image){
             File::delete('storage/' . $car->image);
         }
-        
+
         $data = $request->all();
         $data['image'] = $request->image ? $request->file('image')->store(
             'assets/car', 'public'

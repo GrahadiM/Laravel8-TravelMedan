@@ -77,7 +77,9 @@ class TravelPackageController extends Controller
     {
         $categories = Category::orderBy('title')->get();
 
-        return view('admin.travel-packages.create', compact('categories'));
+        return view('admin.travel-packages.create', [
+            'categories' => $categories
+        ]);
     }
 
     /**

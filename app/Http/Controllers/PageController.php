@@ -19,13 +19,19 @@ class PageController extends Controller
     {
         $categories = Category::with('travel_packages')->get();
         $posts = Post::get();
+        // dd($categories, $posts);
 
-        return view('home', compact('categories','posts'));
+        return view('home', [
+            'categories' => $categories,
+            'posts' => $posts
+        ]);
     }
 
     public function detail(TravelPackage $travelPackage) : View
     {
-        return view('detail', compact('travelPackage'));
+        return view('detail', [
+            'travelPackage' => $travelPackage
+        ]);
     }
 
     // public function order(TravelPackage $travelPackage, Request $request) : View
@@ -81,25 +87,33 @@ class PageController extends Controller
     //     $snapToken = \Midtrans\Snap::getSnapToken($params);
     //     // dd($params);
 
-    //     return view('order', ['snap_token'=>$snapToken], compact('travelPackage'));
+    //     return view('order', ['snap_token'=>$snapToken], [
+    //         'travelPackage' => $travelPackage
+    //     ]);
     // }
 
     public function package()
     {
         $travelPackages = TravelPackage::with('galleries')->get();
 
-        return view('package', compact('travelPackages'));
+        return view('package', [
+            'travelPackages' => $travelPackages
+        ]);
     }
 
     public function posts()
     {
         $posts = Post::get();
 
-        return view('posts', compact('posts'));
+        return view('posts', [
+            'posts' => $posts
+        ]);
     }
 
     public function detailPost(Post $post){
-        return view('posts-detail',compact('post'));
+        return view('posts-detail',[
+            'post' => $post
+        ]);
     }
 
     public function contact()

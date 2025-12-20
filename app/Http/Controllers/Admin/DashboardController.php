@@ -38,19 +38,19 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard.index', compact(
-            'travelPackages',
-            'posts',
-            'totalTransactions',
-            'pendingTransactions',
-            'successTransactions',
-            'failedTransactions',
-            'totalRevenue',
-            'monthlyTransactions',
-            'statusDistribution',
-            'topPackages',
-            'recentTransactions'
-        ));
+        return view('admin.dashboard.index', [
+            'travelPackages' => $travelPackages,
+            'posts' => $posts,
+            'totalTransactions' => $totalTransactions,
+            'pendingTransactions' => $pendingTransactions,
+            'successTransactions' => $successTransactions,
+            'failedTransactions' => $failedTransactions,
+            'totalRevenue' => $totalRevenue,
+            'monthlyTransactions' => $monthlyTransactions,
+            'statusDistribution' => $statusDistribution,
+            'topPackages' => $topPackages,
+            'recentTransactions' => $recentTransactions
+        ]);
     }
 
     private function getMonthlyTransactions()

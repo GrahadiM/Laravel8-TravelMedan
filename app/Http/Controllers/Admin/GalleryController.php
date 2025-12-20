@@ -26,7 +26,10 @@ class GalleryController extends Controller
 
     public function edit( TravelPackage $travelPackage, Gallery $gallery): View
     {
-        return view('admin.galleries.edit', compact('travelPackage', 'gallery'));
+        return view('admin.galleries.edit', [
+            'travelPackage' => $travelPackage,
+            'gallery' => $gallery
+        ]);
     }
 
     public function update(StoreGalleryRequest $request, TravelPackage $travelPackage, Gallery $gallery): RedirectResponse
